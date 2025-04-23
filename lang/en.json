@@ -1,0 +1,17 @@
+﻿{
+    "preparing": "Preparing...",
+    "download_attempt": "Download attempt %d",
+    "extracting": "Extracting files...",
+    "download_failed": "Download failed!",
+    "install_failed": "Installation failed!",
+    "complete": "Installation complete!",
+    "cancel": "Cancel",
+    "launcher_not_found": "Launcher not found!",
+    "admin_required": "Administrator rights required",
+    "java_install_failed": "Java installation failed!",
+    "java_download_failed": "Java download failed!",
+    "downloaded_mb": "Downloaded {current:.2f} MB of {total:.2f} MB",
+    "extracting_launcher": "Extracting launcher...",
+    "launching_launcher": "Launching launcher...",
+    "installing_java_progress": "Распаковка Java в {path}..."
+}

@@ -1,0 +1,17 @@
+﻿{
+    "preparing": "Подготовка...",
+    "download_attempt": "Попытка загрузки %d",
+    "extracting": "Распаковка файлов...",
+    "download_failed": "Ошибка загрузки!",
+    "install_failed": "Ошибка установки!",
+    "complete": "Установка завершена!",
+    "cancel": "Отмена",
+    "launcher_not_found": "Лаунчер не найден!",
+    "admin_required": "Требуются права администратора",
+    "java_install_failed": "Ошибка установки Java!",
+    "java_download_failed": "Ошибка загрузки Java!",
+    "downloaded_mb": "Скачано {current:.2f} МБ из {total:.2f} МБ",
+    "extracting_launcher": "Извлечение лаунчера...",
+    "launching_launcher": "Запуск лаунчера...",
+    "installing_java_progress": "Распаковка Java в {path}..."
+}

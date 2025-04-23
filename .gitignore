@@ -1,0 +1,33 @@
+# Virtual environment
+.venv/
+
+# Build artifacts
+build/
+dist/
+*.spec
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Local development files
+*.local
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# PyInstaller temp files
+*.manifest
+*.spec
+warn-*.txt
