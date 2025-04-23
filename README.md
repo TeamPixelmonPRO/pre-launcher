@@ -45,7 +45,7 @@ pyinstaller prelauncher.spec
 ```
 
 ## 🔄 Рабочий процесс
-1. Запуск PreLauncher.exe
+1. Запуск Pixelmon.PRO.exe
 2. Проверка наличия Java нужной версии
 3. Автоматическая загрузка и установка Java (при необходимости)
 4. Проверка целостности файлов лаунчера
@@ -118,7 +118,7 @@ pyinstaller prelauncher.spec
 ```
 
 ## 🔄 Workflow
-1. Launch PreLauncher.exe
+1. Launch Pixelmon.PRO.exe
 2. Check for required Java version
 3. Automatically download/install Java if needed
 4. Verify launcher files integrity
