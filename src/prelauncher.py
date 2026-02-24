@@ -13,7 +13,7 @@ import atexit
 import math
 import time
 from pathlib import Path
-from typing import Optional, Callable, Dict, Any
+from typing import Optional, Callable, Dict, Any, List
 
 import dearpygui.dearpygui as dpg
 from logging.handlers import RotatingFileHandler
@@ -80,7 +80,11 @@ class SystemUtils:
         try:
             import locale
             lang = locale.getdefaultlocale()[0][:2].lower()
-            return 'ru' if lang == 'ru' else 'en'
+            if lang == 'ru':
+                return 'ru'
+            elif lang == 'uk' or lang == 'ua':
+                return 'uk'
+            return 'en'
         except Exception:
             return 'en'
 
@@ -92,10 +96,11 @@ class Locale:
         self.strings = self._load_locale(lang)
 
     def _load_locale(self, lang: str) -> Dict[str, str]:
+        # Встроенные дефолтные строки на случай, если файлы *.json отсутствуют
         default_strings = {
             "en": {
                 "preparing": "Preparing...",
-                "download_attempt": "Attempting to download {attempt}",
+                "download_attempt": "Download attempt {attempt}",
                 "extracting": "Extracting files...",
                 "downloading_java": "Downloading Java...",
                 "installing_java": "Installing Java...",
@@ -103,8 +108,24 @@ class Locale:
                 "launching_launcher": "Launching launcher...",
                 "cancel": "Cancel",
                 "cancelled": "Installation cancelled by user.",
-                "download_failed": "Download failed after retries.",
-                "installing_java_progress": "Unpacking Java in {path}..."
+                "download_failed": "Download failed!",
+                "install_failed": "Installation failed!",
+                "complete": "Installation complete!",
+                "launcher_not_found": "Launcher not found!",
+                "admin_required": "Administrator rights required",
+                "java_install_failed": "Java installation failed!",
+                "java_download_failed": "Java download failed!",
+                "downloaded_mb": "Downloaded {current:.2f} MB of {total:.2f} MB",
+                "installing_java_progress": "Unpacking Java in {path}...",
+                "multiple_java_found": "Multiple Java 8 FX installations found. Please select one:",
+                "confirm": "Confirm",
+                "using_java": "Using Java: {path}",
+                "remember_choice": "Remember my choice",
+                "download_recommended": "Download recommended version",
+                "rule_warning_title": "⚠️ Attention: Project Rules",
+                "rule_warning_text": "The official language of the project is Russian. Other languages can be used, but Russian is the priority for communication.\n\nNote: The administration reserves the right to issue punishments or warnings at its discretion for violating this rule.",
+                "understand_btn": "I understand and agree",
+                "dont_show_again": "Don't show this again"
             },
             "ru": {
                 "preparing": "Подготовка...",
@@ -116,8 +137,53 @@ class Locale:
                 "launching_launcher": "Запуск лаунчера...",
                 "cancel": "Отмена",
                 "cancelled": "Установка отменена пользователем.",
-                "download_failed": "Ошибка скачивания файлов.",
-                "installing_java_progress": "Распаковка Java в {path}..."
+                "download_failed": "Ошибка загрузки!",
+                "install_failed": "Ошибка установки!",
+                "complete": "Установка завершена!",
+                "launcher_not_found": "Лаунчер не найден!",
+                "admin_required": "Требуются права администратора",
+                "java_install_failed": "Ошибка установки Java!",
+                "java_download_failed": "Ошибка загрузки Java!",
+                "downloaded_mb": "Скачано {current:.2f} МБ из {total:.2f} МБ",
+                "installing_java_progress": "Распаковка Java в {path}...",
+                "multiple_java_found": "Найдено несколько версий Java 8 FX. Выберите нужную:",
+                "confirm": "Подтвердить",
+                "using_java": "Используется Java: {path}",
+                "remember_choice": "Запомнить выбор",
+                "download_recommended": "Скачать рекомендуемую версию",
+                "rule_warning_title": "⚠️ Внимание: Правила проекта",
+                "rule_warning_text": "Официальный язык проекта - Русский язык. На проекте также можно прибегать к использованию других языков, но в приоритете общения на проекте - Русский язык.\n\nДополнение: Администрация вправе выдать наказание / предупреждение на своё усмотрение за нарушение этого правила.",
+                "understand_btn": "Я понимаю и согласен",
+                "dont_show_again": "Больше не показывать"
+            },
+            "uk": {
+                "preparing": "Підготовка...",
+                "download_attempt": "Спроба завантаження {attempt}",
+                "extracting": "Розпакування файлів...",
+                "downloading_java": "Завантаження Java...",
+                "installing_java": "Встановлення Java...",
+                "extracting_launcher": "Витягування лаунчера...",
+                "launching_launcher": "Запуск лаунчера...",
+                "cancel": "Скасувати",
+                "cancelled": "Встановлення скасовано користувачем.",
+                "download_failed": "Помилка завантаження!",
+                "install_failed": "Помилка встановлення!",
+                "complete": "Встановлення завершено!",
+                "launcher_not_found": "Лаунчер не знайдено!",
+                "admin_required": "Потрібні права адміністратора",
+                "java_install_failed": "Помилка встановлення Java!",
+                "java_download_failed": "Помилка завантаження Java!",
+                "downloaded_mb": "Завантажено {current:.2f} МБ із {total:.2f} МБ",
+                "installing_java_progress": "Розпакування Java в {path}...",
+                "multiple_java_found": "Знайдено декілька версій Java 8 FX. Оберіть потрібну:",
+                "confirm": "Підтвердити",
+                "using_java": "Використовується Java: {path}",
+                "remember_choice": "Запам'ятати вибір",
+                "download_recommended": "Завантажити рекомендовану версію",
+                "rule_warning_title": "⚠️ Увага: Правила проєкту",
+                "rule_warning_text": "Офіційна мова проєкту - російська. На проєкті також можна використовувати інші мови, але пріоритетом спілкування є російська.\n\nДоповнення: Адміністрація має право видати покарання / попередження на свій розсуд за порушення цього правила.",
+                "understand_btn": "Я розумію та погоджуюсь",
+                "dont_show_again": "Більше не показувати"
             }
         }
         
@@ -223,8 +289,6 @@ class JavaManager:
             install_path.mkdir(parents=True, exist_ok=True)
             
             with zipfile.ZipFile(temp_zip, 'r') as zip_ref:
-                # В идеале здесь тоже проверять cancel_event при распаковке каждого файла, 
-                # но zipfile.extractall синхронный. Оставляем базовую проверку перед стартом.
                 if cancel_event.is_set(): return False
                 zip_ref.extractall(install_path)
             
@@ -246,44 +310,77 @@ class JavaManager:
             self.logger.error(f"Java installation failed: {e}")
             return False
 
-    def find_existing_java(self) -> Optional[Path]:
-        """Ищет установленную Java указанной версии в системе."""
-        install_path: Path = CONFIG['java']['install_path']
-        search_paths = [
-            install_path / "bin" / "javaw.exe",
-            PROGRAM_FILES / "Java" / "zulu8.86.0.25-ca-fx-jre8.0.452" / "bin" / "javaw.exe", # legacy path
-            PROGRAM_FILES / "Java" / "1.8.0_452" / "bin" / "javaw.exe",
-            PROGRAM_FILES / "Java" / "1.8.0_482" / "bin" / "javaw.exe",
-            Path(os.getenv('ProgramFiles(x86)', 'C:/Program Files (x86)')) / "Java" / "1.8.0_452" / "bin" / "javaw.exe",
-            Path(os.getenv('ProgramFiles(x86)', 'C:/Program Files (x86)')) / "Java" / "1.8.0_482" / "bin" / "javaw.exe"
+    def find_existing_javas(self) -> List[Path]:
+        """Ищет ВСЕ установленные версии Java с проверкой наличия JavaFX (jfxrt.jar)."""
+        search_paths = []
+        
+        # 1. Динамическое сканирование стандартных папок Java
+        base_dirs = [
+            PROGRAM_FILES / "Java",
+            Path(os.getenv('ProgramFiles(x86)', 'C:/Program Files (x86)')) / "Java",
+            PROGRAM_FILES / "Zulu", # Популярная папка для Azul Zulu
+            CONFIG['java']['install_path'].parent # Папка установки нашего лаунчера
         ]
+        
+        for base_dir in base_dirs:
+            if base_dir.exists():
+                for sub in base_dir.iterdir():
+                    if sub.is_dir():
+                        potential_javaw = sub / "bin" / "javaw.exe"
+                        if potential_javaw.exists():
+                            search_paths.append(potential_javaw)
+
+        # 2. Добавляем системную Java из переменной PATH (если есть)
+        system_javaw = shutil.which("javaw")
+        if system_javaw:
+            try:
+                # Извлекаем реальный путь, чтобы избежать ярлыков (symlinks)
+                real_path = Path(os.path.realpath(system_javaw))
+                search_paths.append(real_path)
+            except Exception:
+                search_paths.append(Path(system_javaw))
+
+        valid_javas = []
+        resolved_paths = set()
 
         for path in search_paths:
-            if path.exists():
-                try:
-                    result = subprocess.run(
-                        [str(path), "-version"],
-                        stderr=subprocess.PIPE, text=True,
-                        creationflags=subprocess.CREATE_NO_WINDOW
-                    )
-                    if CONFIG['java']['version'] in result.stderr:
-                        return path
-                except Exception:
-                    continue
-                    
-        # Проверка глобальной переменной PATH
-        try:
-            result = subprocess.run(
-                ["java", "-version"],
-                stderr=subprocess.PIPE, text=True,
-                creationflags=subprocess.CREATE_NO_WINDOW
-            )
-            if CONFIG['java']['version'] in result.stderr:
-                return Path("java") # Системная команда
-        except Exception:
-            pass
+            if not path.exists():
+                continue
+                
+            # Убираем дубликаты путей (например, если PATH указывает на ту же папку)
+            try:
+                res_path = path.resolve()
+            except Exception:
+                res_path = path
+                
+            if res_path in resolved_paths:
+                continue
+            resolved_paths.add(res_path)
+                
+            # КРИТИЧЕСКАЯ ПРОВЕРКА: Ищем файл JavaFX (jfxrt.jar)
+            # Учитываем, что это может быть JRE (папка lib) или JDK (папка jre/lib)
+            jfx_jre = res_path.parent.parent / "lib" / "ext" / "jfxrt.jar"
+            jfx_jdk = res_path.parent.parent / "jre" / "lib" / "ext" / "jfxrt.jar"
+            
+            if not (jfx_jre.exists() or jfx_jdk.exists()):
+                self.logger.debug(f"Skipping {res_path}: JavaFX (jfxrt.jar) not found.")
+                continue
 
-        return None
+            # Если FX есть, проверяем версию Java
+            try:
+                result = subprocess.run(
+                    [str(res_path), "-version"],
+                    stderr=subprocess.PIPE, text=True,
+                    creationflags=subprocess.CREATE_NO_WINDOW
+                )
+                if CONFIG['java']['version'] in result.stderr:
+                    self.logger.info(f"Found valid Java WITH JavaFX: {res_path}")
+                    valid_javas.append(res_path)
+            except Exception as e:
+                self.logger.debug(f"Failed to check java version for {res_path}: {e}")
+                continue
+
+        return valid_javas
 
 
 class PrelauncherApp:
@@ -299,10 +396,16 @@ class PrelauncherApp:
         self.temp_dir = self.app_dir / 'tmp'
         self.temp_dir.mkdir(parents=True, exist_ok=True)
         
+        self.config_file = self.app_dir / 'launcher_config.json'
+        
         atexit.register(self.cleanup)
 
         self.locale = Locale(SystemUtils.detect_language())
         self.cancel_event = threading.Event()
+        self.java_selected_event = threading.Event() # Событие выбора Java из списка
+        self.force_download_event = threading.Event() # Событие принудительной загрузки Java
+        self.lang_warning_event = threading.Event() # Событие принятия правил
+        self.selected_java: Optional[Path] = None
         self.log_text = ""
         
         self.setup_logging()
@@ -336,6 +439,31 @@ class PrelauncherApp:
         except Exception as e:
             self.logger.warning(f"Cleanup failed: {e}")
 
+    # --- Универсальные методы работы с конфигом ---
+    def get_config_value(self, key: str, default: Any = None) -> Any:
+        if self.config_file.exists():
+            try:
+                with open(self.config_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    return data.get(key, default)
+            except Exception:
+                pass
+        return default
+
+    def set_config_value(self, key: str, value: Any):
+        try:
+            data = {}
+            if self.config_file.exists():
+                with open(self.config_file, 'r', encoding='utf-8') as f:
+                    try: data = json.load(f)
+                    except json.JSONDecodeError: data = {}
+            
+            data[key] = value
+            with open(self.config_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+        except Exception as e:
+            self.logger.warning(f"Failed to save config: {e}")
+
     def log_to_ui(self, message: str, level: str = 'INFO'):
         """Потокобезопасный вывод логов в UI."""
         self.logger.log(logging.getLevelName(level.upper()), message)
@@ -361,11 +489,44 @@ class PrelauncherApp:
     def installation_worker(self):
         """Фоновый поток для выполнения тяжелых задач (скачивание/установка)."""
         try:
-            # 1. Поиск существующей Java
-            java_path = self.java_manager.find_existing_java()
+            available_javas = self.java_manager.find_existing_javas()
+            java_path = None
+            force_download = False
             
-            if not java_path:
-                # 2. Скачивание Java
+            if available_javas:
+                # Проверяем, был ли сохранен выбор ранее
+                saved_java_str = self.get_config_value("saved_java_path")
+                saved_java = Path(saved_java_str) if saved_java_str else None
+                
+                if saved_java and saved_java in available_javas:
+                    java_path = saved_java
+                elif len(available_javas) == 1:
+                    # Если найдена ровно одна - используем её молча
+                    java_path = available_javas[0]
+                else:
+                    # Если найдено несколько - просим пользователя выбрать
+                    self.log_to_ui(f"Multiple Java installations found. Waiting for selection...", "WARNING")
+                    combo_items = [str(p) for p in available_javas]
+                    
+                    if dpg.is_dearpygui_running():
+                        dpg.configure_item("java_combo", items=combo_items, default_value=combo_items[0])
+                        dpg.configure_item("java_selection_modal", show=True)
+                        
+                    # Ждем, пока пользователь не выберет Java (или не нажмет отмену/скачивание)
+                    while not self.java_selected_event.is_set() and not self.cancel_event.is_set():
+                        time.sleep(0.1)
+                        
+                    if self.cancel_event.is_set():
+                        self.update_status("cancelled")
+                        return
+                    
+                    if self.force_download_event.is_set():
+                        force_download = True
+                    else:
+                        java_path = self.selected_java
+
+            # Запускаем загрузку, если Java не найдена или пользователь запросил это явно
+            if not available_javas or force_download:
                 self.update_status("downloading_java")
                 success = self.java_manager.download_java(self.set_progress, self.cancel_event)
                 
@@ -377,7 +538,6 @@ class PrelauncherApp:
                     self.log_to_ui("Failed to download Java.", "ERROR")
                     return
                 
-                # 3. Установка Java
                 self.update_status("installing_java")
                 self.set_progress(100) # Индикатор для пользователя
                 
@@ -387,11 +547,30 @@ class PrelauncherApp:
                     
                 java_path = CONFIG['java']['install_path'] / 'bin' / 'javaw.exe'
 
+            # Логируем итоговый путь к Java в UI консоль
+            if java_path:
+                self.log_to_ui(self.locale.get("using_java", path=str(java_path)), "INFO")
+
             # 4. Распаковка и запуск Launcher
-            if not self.cancel_event.is_set():
+            if not self.cancel_event.is_set() and java_path:
                 self.update_status("extracting_launcher")
                 launcher_target = self.extract_launcher()
                 
+                # --- ПРОВЕРКА ПРАВИЛ ПРОЕКТА О ЯЗЫКЕ (Для не-RU пользователей) ---
+                if SystemUtils.detect_language() != 'ru':
+                    rule_acknowledged = self.get_config_value("rule_acknowledged", False)
+                    if not rule_acknowledged:
+                        if dpg.is_dearpygui_running():
+                            dpg.configure_item("language_warning_modal", show=True)
+                        
+                        self.log_to_ui("Waiting for rule acknowledgement...", "WARNING")
+                        while not self.lang_warning_event.is_set() and not self.cancel_event.is_set():
+                            time.sleep(0.1)
+                            
+                        if self.cancel_event.is_set():
+                            self.update_status("cancelled")
+                            return
+
                 self.update_status("launching_launcher")
                 self.launch_game(java_path, launcher_target)
 
@@ -438,10 +617,42 @@ class PrelauncherApp:
             self.log_to_ui(f"Launch error: {e}", "ERROR")
 
     def on_cancel_clicked(self):
-        """Обработчик кнопки Отмена."""
+        """Обработчик кнопки Отмена (в главном окне)."""
         self.cancel_event.set()
         dpg.configure_item("cancel_btn", enabled=False, label="Cancelling...")
+        if dpg.does_item_exist("java_selection_modal"):
+            dpg.configure_item("java_selection_modal", show=False)
+        if dpg.does_item_exist("language_warning_modal"):
+            dpg.configure_item("language_warning_modal", show=False)
         self.log_to_ui("Cancellation requested, waiting for threads...", "WARNING")
+
+    def on_java_confirmed(self):
+        """Обработчик кнопки подтверждения в модальном окне выбора Java."""
+        selected = dpg.get_value("java_combo")
+        if selected:
+            self.selected_java = Path(selected)
+            if dpg.get_value("remember_java_cb"):
+                self.set_config_value("saved_java_path", str(self.selected_java))
+            dpg.configure_item("java_selection_modal", show=False)
+            self.java_selected_event.set() # Разблокируем фоновый поток
+
+    def on_java_cancelled(self):
+        """Обработчик кнопки отмены внутри модального окна."""
+        dpg.configure_item("java_selection_modal", show=False)
+        self.on_cancel_clicked()
+
+    def on_download_recommended(self):
+        """Обработчик кнопки принудительного скачивания рекомендуемой версии."""
+        dpg.configure_item("java_selection_modal", show=False)
+        self.force_download_event.set()
+        self.java_selected_event.set() # Разблокируем цикл ожидания
+
+    def on_language_warning_acknowledged(self):
+        """Обработчик согласия с правилом о языке."""
+        if dpg.get_value("remember_rule_cb"):
+            self.set_config_value("rule_acknowledged", True)
+        dpg.configure_item("language_warning_modal", show=False)
+        self.lang_warning_event.set()
 
     def setup_ui(self):
         """Инициализация и верстка интерфейса DearPyGui."""
@@ -453,6 +664,7 @@ class PrelauncherApp:
                 dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 6)
                 dpg.add_theme_style(dpg.mvStyleVar_ChildRounding, 6)
                 dpg.add_theme_style(dpg.mvStyleVar_WindowRounding, 6)
+                dpg.add_theme_style(dpg.mvStyleVar_PopupRounding, 6)
         dpg.bind_theme(global_theme)
 
         font_path = SystemUtils.resource_path(Path("fonts") / "Roboto-Regular.ttf")
@@ -463,6 +675,7 @@ class PrelauncherApp:
                 if font_path.exists():
                     with dpg.font(str(font_path), 18) as font:
                         dpg.add_font_range(0x0400, 0x04FF) # Cyrillic
+                        dpg.add_font_range(0x0400, 0x052F) # Ukrainian extended cyrillic (Ґ, Є, І, Ї)
                     default_font = font
                 else:
                     self.logger.warning(f"Font not found at {font_path}. Using Windows fallback.")
@@ -471,6 +684,7 @@ class PrelauncherApp:
                         if Path(fallback).exists():
                             with dpg.font(fallback, 18) as font:
                                 dpg.add_font_range(0x0400, 0x04FF)
+                                dpg.add_font_range(0x0400, 0x052F)
                             default_font = font
                             break
             except Exception as e:
@@ -500,6 +714,21 @@ class PrelauncherApp:
             with dpg.theme_component(dpg.mvProgressBar):
                 dpg.add_theme_color(dpg.mvThemeCol_PlotHistogram, (70, 130, 180, 255), tag="progress_color")
                 dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (40, 40, 40, 255))
+
+        # Настраиваем параметры окна и Favicon
+        viewport_kwargs = {
+            "title": CONFIG['app_title'],
+            "width": 800,
+            "height": 600,
+            "resizable": False
+        }
+        
+        favicon_path = SystemUtils.resource_path(Path("images") / "favicon.ico")
+        if favicon_path.exists():
+            viewport_kwargs["small_icon"] = str(favicon_path)
+            viewport_kwargs["large_icon"] = str(favicon_path)
+        else:
+            self.logger.warning(f"Favicon not found at {favicon_path}")
 
         # Главное окно
         with dpg.window(tag="main_window", no_title_bar=True):
@@ -535,7 +764,44 @@ class PrelauncherApp:
                     width=120, height=30
                 )
 
-        dpg.create_viewport(title=CONFIG['app_title'], width=800, height=600, resizable=False)
+        # Модальное окно для выбора Java (по умолчанию скрыто)
+        with dpg.window(tag="java_selection_modal", modal=True, show=False, no_title_bar=True, no_resize=True, pos=[150, 180], width=500):
+            with dpg.group():
+                dpg.add_spacer(height=10)
+                dpg.add_text(self.locale.get("multiple_java_found"))
+                dpg.add_spacer(height=10)
+                dpg.add_combo([], tag="java_combo", width=-1)
+                dpg.add_spacer(height=5)
+                dpg.add_checkbox(label=self.locale.get("remember_choice"), tag="remember_java_cb")
+                dpg.add_spacer(height=15)
+                with dpg.group(horizontal=True):
+                    dpg.add_spacer(width=100) # Центрируем кнопки
+                    dpg.add_button(label=self.locale.get("confirm"), width=130, callback=self.on_java_confirmed)
+                    dpg.add_button(label=self.locale.get("cancel"), width=130, callback=self.on_java_cancelled)
+                dpg.add_spacer(height=5)
+                with dpg.group(horizontal=True):
+                    dpg.add_spacer(width=100)
+                    # Ширина 130+130+8 (отступ) = 268 пикселей
+                    dpg.add_button(label=self.locale.get("download_recommended"), width=268, callback=self.on_download_recommended)
+                dpg.add_spacer(height=10)
+
+        # Новое модальное окно: Предупреждение о языке сервера
+        with dpg.window(tag="language_warning_modal", modal=True, show=False, no_title_bar=True, no_resize=True, pos=[100, 150], width=600):
+            with dpg.group():
+                dpg.add_spacer(height=10)
+                # Красный цвет для привлечения внимания
+                dpg.add_text(self.locale.get("rule_warning_title"), color=(255, 80, 80, 255))
+                dpg.add_spacer(height=10)
+                dpg.add_text(self.locale.get("rule_warning_text"), wrap=560)
+                dpg.add_spacer(height=15)
+                dpg.add_checkbox(label=self.locale.get("dont_show_again"), tag="remember_rule_cb")
+                dpg.add_spacer(height=20)
+                with dpg.group(horizontal=True):
+                    dpg.add_spacer(width=175) # Центрируем кнопку (ширина окна 600)
+                    dpg.add_button(label=self.locale.get("understand_btn"), width=250, height=35, callback=self.on_language_warning_acknowledged)
+                dpg.add_spacer(height=10)
+
+        dpg.create_viewport(**viewport_kwargs)
         dpg.setup_dearpygui()
         dpg.show_viewport()
         
@@ -568,6 +834,12 @@ class PrelauncherApp:
         # Завершение
         if worker_thread.is_alive():
             self.cancel_event.set()
+            if dpg.does_item_exist("java_selection_modal"):
+                dpg.configure_item("java_selection_modal", show=False)
+            if dpg.does_item_exist("language_warning_modal"):
+                dpg.configure_item("language_warning_modal", show=False)
+            self.java_selected_event.set() # Освобождаем фоновый поток, если он ждет выбора
+            self.lang_warning_event.set()
             worker_thread.join(timeout=2.0)
             
         dpg.destroy_context()
